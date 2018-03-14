@@ -43,7 +43,17 @@
 #ifndef RTMIDI_H
 #define RTMIDI_H
 
-#if defined _WIN32 || defined __CYGWIN__
+#if defined _WIN32
+
+#ifdef RTMIDI_EXPORTS
+#define RTMIDI_DLL_PUBLIC __declspec(dllexport)
+#elif RTMIDI_USE
+#define RTMIDI_DLL_PUBLIC __declspec(dllimport)
+#else
+#define RTMIDI_DLL_PUBLIC
+#endif
+
+#elif defined __CYGWIN__
   #define RTMIDI_DLL_PUBLIC
 #else
   #if __GNUC__ >= 4
@@ -90,7 +100,7 @@ class RTMIDI_DLL_PUBLIC RtMidiError : public std::exception
 
   //! The constructor.
   RtMidiError( const std::string& message, Type type = RtMidiError::UNSPECIFIED ) throw() : message_(message), type_(type) {}
- 
+
   //! The destructor.
   virtual ~RtMidiError( void ) throw() {}
 
@@ -512,8 +522,8 @@ class RTMIDI_DLL_PUBLIC MidiInApi : public MidiApi
 
   // A MIDI structure used internally by the class to store incoming
   // messages.  Each message represents one and only one MIDI message.
-  struct MidiMessage { 
-    std::vector<unsigned char> bytes; 
+  struct MidiMessage {
+    std::vector<unsigned char> bytes;
 
     //! Time in seconds elapsed since the previous message
     double timeStamp;
